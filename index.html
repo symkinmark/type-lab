@@ -9,26 +9,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,440&family=Albert+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#ffffff;--ink:#000000;--ink-soft:#444444;--line:#e6e6e6;--line-strong:#c4c4c4;
-    --accent:#000000;--black:#000000;--paper-on-black:#ffffff;--micro:#9a9a9a;
+    --paper:#fdfaf3;--ink:#0e0e0e;--ink-soft:#3a3a36;--line:#e8e3d6;--line-strong:#c8c2b1;
+    --accent:#0e0e0e;--black:#0e0e0e;--paper-on-black:#fdfaf3;--micro:#8e8a7e;
     --ui:'Albert Sans',-apple-system,system-ui,sans-serif;
     --mono:'Spline Sans Mono',ui-monospace,monospace;--display:'Fraunces',Georgia,serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{text-rendering:optimizeLegibility}
   body{background:var(--paper);color:var(--ink);font-family:var(--ui);line-height:1.4}
-  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-strong)}
+  header{position:sticky;top:0;z-index:50;background:rgba(253,250,243,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--line-strong)}
   .masthead{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding:.85rem 1.6rem .7rem;flex-wrap:wrap}
   .brand{display:flex;align-items:baseline;gap:.7rem}
-  .brand h1{font-family:var(--display);font-weight:440;font-style:italic;font-size:1.85rem;letter-spacing:-.02em;line-height:1}
+  .brand h1{font-family:var(--display);font-weight:440;font-style:italic;font-size:3rem;letter-spacing:-.025em;line-height:.95}
   .brand .tick{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:2px;padding:.2rem .4rem}
   .brand .sub{font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
   .count{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);white-space:nowrap}
   .controls{border-top:1px solid var(--line);padding:.7rem 1.6rem .9rem;display:grid;gap:.6rem}
   .row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
   .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-right:.15rem;white-space:nowrap}
-  .pill{font-family:var(--mono);font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--line-strong);background:transparent;color:var(--ink-soft);padding:.36rem .68rem;border-radius:999px;cursor:pointer;transition:.15s;user-select:none}
+  .pill{font-family:var(--mono);font-size:.66rem;letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--line-strong);background:transparent;color:var(--ink-soft);padding:.36rem .68rem;border-radius:999px;cursor:pointer;transition:background .18s ease,border-color .18s ease,color .18s ease,transform .08s ease;user-select:none;will-change:transform}
   .pill:hover{border-color:var(--ink);color:var(--ink)}
+  .pill:active{transform:scale(.96)}
   .pill.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
   .pill.on.accent{background:var(--accent);border-color:var(--accent)}
   .pill.fav.on{background:var(--ink);border-color:var(--ink)}
@@ -47,13 +48,18 @@
   .upload-btn:hover{border-color:var(--ink);color:var(--ink);border-style:solid}
   main{padding:0 1.6rem 6rem}
   /* generous breathing room between fonts */
-  .card{border-bottom:1px solid var(--line);padding:2.8rem 0 3.1rem}
+  .card{border-bottom:1px solid var(--line);padding:7rem 0 7.5rem;font-synthesis:none;transition:opacity .18s ease}
+  .card.refreshing{opacity:.4}
   .card.isfav{background:linear-gradient(90deg,rgba(0,0,0,.045),transparent 40%);margin:0 -1.6rem;padding-left:1.6rem;padding-right:1.6rem;border-left:2px solid var(--ink)}
-  .card-head{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1.1rem}
-  .star{font-size:1.15rem;line-height:1;background:none;border:none;cursor:pointer;color:var(--line-strong);transition:.15s;padding:0 .1rem}
+  .card-head{display:flex;flex-direction:column;gap:1.2rem;margin-bottom:3rem}
+  .ch-top{display:flex;align-items:baseline;gap:.8rem}
+  .ch-bot{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}
+  .actions{display:flex;gap:.3rem;margin-left:auto;flex-wrap:wrap}
+  @media(hover:hover){.card .actions{opacity:0;transition:opacity .18s} .card:hover .actions, .card:focus-within .actions{opacity:1}}
+  .star{font-size:1.4rem;line-height:1;background:none;border:none;cursor:pointer;color:var(--line-strong);transition:.15s;padding:0 .1rem;flex-shrink:0}
   .star:hover{color:var(--ink);transform:scale(1.15)}
   .star.on{color:var(--ink)}
-  .fname{font-family:var(--display);font-weight:440;font-size:1.15rem;letter-spacing:-.01em}
+  .fname{font-family:var(--display);font-weight:440;font-size:2.2rem;letter-spacing:-.015em;line-height:1.05;flex:1;min-width:0;word-break:break-word}
   .meta{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap}
   .tag{font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);border:1px solid var(--line-strong);border-radius:2px;padding:.16rem .4rem}
   .tag.cat{color:var(--ink)}
@@ -65,21 +71,30 @@
   .price-inp{width:78px;font-family:var(--mono);font-size:.6rem;padding:.2rem .35rem !important;border-radius:2px !important}
   .lic-search{font-family:var(--mono);font-size:.62rem;color:var(--ink-soft);text-decoration:none;border:1px solid var(--line-strong);border-radius:2px;padding:.16rem .34rem}
   .lic-search:hover{color:var(--ink);border-color:var(--ink)}
-  .act{font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line-strong);background:transparent;color:var(--ink-soft);border-radius:3px;padding:.22rem .5rem;cursor:pointer;transition:.15s}
+  .act{font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line-strong);background:transparent;color:var(--ink-soft);border-radius:3px;padding:.22rem .5rem;cursor:pointer;transition:background .18s ease,border-color .18s ease,color .18s ease,transform .08s ease;will-change:transform}
   .act:hover{border-color:var(--ink);color:var(--ink)}
-  .idx{font-family:var(--mono);font-size:.6rem;color:var(--micro);letter-spacing:.1em;margin-left:auto}
-  .weights{display:flex;gap:.32rem;align-items:center;flex-wrap:wrap;margin-bottom:1.5rem}
-  .wchip{font-family:var(--mono);font-size:.58rem;border:1px solid var(--line-strong);color:var(--ink-soft);background:transparent;border-radius:999px;padding:.22rem .55rem;cursor:pointer;transition:.12s}
+  .act:active{transform:scale(.95)}
+  .idx{font-family:var(--mono);font-size:.6rem;color:var(--micro);letter-spacing:.1em;margin-left:auto;flex-shrink:0}
+  /* per-card inline tester */
+  .big[contenteditable]{outline:none;cursor:text;border-bottom:1px dashed transparent;transition:border-color .15s}
+  .big[contenteditable]:hover{border-bottom-color:var(--line-strong)}
+  .big[contenteditable]:focus{border-bottom-color:var(--ink)}
+  .para[contenteditable]{outline:none;cursor:text}
+  .para[contenteditable]:focus{box-shadow:inset 0 -1px 0 var(--ink)}
+  .weights{display:flex;gap:.45rem;align-items:center;flex-wrap:wrap;margin-bottom:2.8rem}
+  .wchip{font-family:var(--mono);font-size:.68rem;border:1px solid var(--line-strong);color:var(--ink-soft);background:transparent;border-radius:999px;padding:.34rem .78rem;cursor:pointer;transition:background .18s ease,border-color .18s ease,color .18s ease,transform .08s ease;will-change:transform}
   .wchip:hover{border-color:var(--ink);color:var(--ink)}
+  .wchip:active{transform:scale(.94)}
   .wchip.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
   .wchip.ital{font-style:italic}
   /* specimens — lots of vertical space */
-  .spec{margin:0 0 2rem}
+  .spec{margin:0 0 3.5rem;font-synthesis:none}
   .spec:last-child{margin-bottom:0}
-  .spec .tiny{font-family:var(--mono);font-size:.54rem;letter-spacing:.16em;text-transform:uppercase;color:var(--micro);margin-bottom:.55rem;display:block}
-  .big{line-height:1.34;letter-spacing:-.005em;word-break:break-word;color:var(--ink)}
-  .para{line-height:1.7;color:var(--ink);max-width:62ch}
-  .words{display:flex;gap:3rem;flex-wrap:wrap;align-items:baseline}
+  .spec .tiny{font-family:var(--mono);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--micro);margin-bottom:1rem;display:block}
+  .big{line-height:1.25;letter-spacing:-.005em;word-break:break-word;color:var(--ink);min-height:1.25em;font-size-adjust:ex-height 0.5;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+  .big + .big{margin-top:.7rem}
+  .para{line-height:1.7;color:var(--ink);max-width:62ch;font-size-adjust:ex-height 0.5;-webkit-font-smoothing:antialiased}
+  .words{display:flex;gap:4rem;flex-wrap:wrap;align-items:baseline}
   .words .unit{display:flex;flex-direction:column;gap:.3rem}
   .blackstrip{background:var(--black);color:var(--paper-on-black);border-radius:6px;padding:1.6rem 1.6rem}
   .blackstrip .tiny{color:#888}.blackstrip .big{color:var(--paper-on-black)}
@@ -241,6 +256,9 @@ let licenses=store.get('tl_lic',{});
 let archived=store.get('tl_arch',[]);
 let boards=store.get('tl_boards',{});
 let syncCfg=store.get('tl_sync',{provider:'off'});
+let cardText=store.get('tl_text',{});
+let cardTextSaveTimer=null;
+function persistCardText(){clearTimeout(cardTextSaveTimer);cardTextSaveTimer=setTimeout(()=>store.set('tl_text',cardText),700);}
 const SYNCSET=new Set(['tl_favs','tl_lic','tl_arch','tl_boards']);
 let suppressSync=false,syncTimer;
 function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(cloudSave,1500);}
@@ -305,10 +323,16 @@ function cardInner(f,i){
   const L=LANGS[state.lang],S=state.specs,fam=famOf(f);
   const rtl=L.dir==='rtl'?' rtl':'';
   const it=italOn[f.f]?'font-style:italic;':'';
-  const ph=esc(aPhrase()),wd=esc(aWord()),pa=esc(aPara());
+  const ovr=cardText[f.f]||{};
+  const ph=esc(ovr.phrase ?? aPhrase());
+  const wd=esc(ovr.word ?? aWord());
+  const pa=esc(ovr.para ?? aPara());
+  const cap=esc(ovr.caps ?? aPhrase());
+  const bl=esc(ovr.black ?? aPhrase());
   const sel=selWeights(f),prim=sel[0];
   const base=`font-family:'${esc(fam)}',sans-serif;font-size:${state.size}px;${it}`;
   const lic=getLic(f),lm=LICMETA[lic.type];
+  const ed=(spec)=>`contenteditable="plaintext-only" data-card-edit="${esc(f.f)}::${spec}" spellcheck="false"`;
 
   let tags=f.up?'<span class="tag up">uploaded</span>'
     :`<span class="tag cat">${f.c}</span>`+(f.s||[]).map(x=>`<span class="tag">${x}</span>`).join('');
@@ -336,23 +360,28 @@ function cardInner(f,i){
   const chips=wlist.map(w=>`<button class="wchip${sel.indexOf(w)>=0?' on':''}" data-w="${w}" data-name="${esc(f.f)}">${w}</button>`).join('')
     + (f.up||f.i?`<button class="wchip ital${italOn[f.f]?' on':''}" data-ital="${esc(f.f)}">italic</button>`:'');
 
-  // specimens
+  // specimens — all .big divs are editable; siblings in same spec mirror on input
   let b='';
-  if(S.phrase) b+=`<div class="spec"><span class="tiny">phrase</span>`+
-    sel.map(w=>`<div class="big${rtl}" style="${base}font-weight:${w}">${ph}</div>`).join('')+`</div>`;
-  if(S.caps) b+=`<div class="spec"><span class="tiny">caps</span>`+
-    sel.map(w=>`<div class="big${rtl}" style="${base}font-weight:${w};text-transform:uppercase">${ph}</div>`).join('')+`</div>`;
-  if(S.para) b+=`<div class="spec"><span class="tiny">paragraph</span><div class="para${rtl}" style="font-family:'${esc(fam)}',sans-serif;font-size:${Math.max(15,Math.round(state.size*0.4))}px;font-weight:${prim};${it}">${pa}</div></div>`;
-  if(S.single) b+=`<div class="spec"><span class="tiny">single word · caps / lowercase</span><div class="words">
-      <div class="unit"><div class="big${rtl}" style="${base}font-weight:${prim};text-transform:uppercase">${wd}</div></div>
-      <div class="unit"><div class="big${rtl}" style="${base}font-weight:${prim};text-transform:lowercase">${wd}</div></div></div></div>`;
-  if(S.black) b+=`<div class="spec"><span class="tiny">on black</span><div class="blackstrip"><div class="big${rtl}" style="${base}font-weight:${prim}">${ph}</div></div></div>`;
+  if(S.phrase) b+=`<div class="spec"><span class="tiny">phrase · click to edit</span>`+
+    sel.map(w=>`<div class="big${rtl}" ${ed('phrase')} style="${base}font-weight:${w}">${ph}</div>`).join('')+`</div>`;
+  if(S.caps) b+=`<div class="spec"><span class="tiny">caps · click to edit</span>`+
+    sel.map(w=>`<div class="big${rtl}" ${ed('caps')} style="${base}font-weight:${w};text-transform:uppercase">${cap}</div>`).join('')+`</div>`;
+  if(S.para) b+=`<div class="spec"><span class="tiny">paragraph · click to edit</span><div class="para${rtl}" ${ed('para')} style="font-family:'${esc(fam)}',sans-serif;font-size:${Math.max(15,Math.round(state.size*0.4))}px;font-weight:${prim};${it}">${pa}</div></div>`;
+  if(S.single) b+=`<div class="spec"><span class="tiny">single word · caps / lowercase · click to edit</span><div class="words">
+      <div class="unit"><div class="big${rtl}" ${ed('word')} style="${base}font-weight:${prim};text-transform:uppercase">${wd}</div></div>
+      <div class="unit"><div class="big${rtl}" ${ed('word')} style="${base}font-weight:${prim};text-transform:lowercase">${wd}</div></div></div></div>`;
+  if(S.black) b+=`<div class="spec"><span class="tiny">on black · click to edit</span><div class="blackstrip"><div class="big${rtl}" ${ed('black')} style="${base}font-weight:${prim}">${bl}</div></div></div>`;
 
   return `<div class="card-head">
-      <button class="star${isFav(f.f)?' on':''}" data-fav="${esc(f.f)}" title="favourite">${isFav(f.f)?'★':'☆'}</button>
-      <span class="fname" style="font-family:'${esc(fam)}',serif">${esc(f.f)}</span>
-      <span class="meta">${tags}${lic_h}${actions}</span>
-      <span class="idx">${String(i+1).padStart(3,'0')}</span>
+      <div class="ch-top">
+        <button class="star${isFav(f.f)?' on':''}" data-fav="${esc(f.f)}" title="favourite">${isFav(f.f)?'★':'☆'}</button>
+        <span class="fname" style="font-family:'${esc(fam)}',serif">${esc(f.f)}</span>
+        <span class="idx">${String(i+1).padStart(3,'0')}</span>
+      </div>
+      <div class="ch-bot">
+        <span class="meta">${tags}${lic_h}</span>
+        <span class="actions">${actions}</span>
+      </div>
     </div>
     <div class="weights">${chips}</div>${b}<div class="insight"></div>`;
 }
@@ -365,9 +394,13 @@ function makeCardEl(f,i){
 }
 function refreshCard(el,f){
   const i=+(el.dataset.idx||0);
-  el.className='card'+(isFav(f.f)?' isfav':'');
-  el.innerHTML=cardInner(f,i);
-  loadCardFaces(f);
+  el.classList.add('refreshing');
+  requestAnimationFrame(()=>{
+    el.className='card refreshing'+(isFav(f.f)?' isfav':'');
+    el.innerHTML=cardInner(f,i);
+    loadCardFaces(f);
+    requestAnimationFrame(()=>el.classList.remove('refreshing'));
+  });
 }
 
 /* ---------- infinite scroll ---------- */
@@ -461,6 +494,21 @@ list.addEventListener('click',e=>{
 });
 list.addEventListener('change',e=>{const sel=e.target.closest('[data-licsel]');if(sel){const n=sel.dataset.licsel;const cur=licenses[n]||{};cur.type=sel.value;licenses[n]=cur;store.set('tl_lic',licenses);const f=byName[n]||uploaded.find(u=>u.f===n);refreshCard(e.target.closest('.card'),f);}});
 list.addEventListener('input',e=>{const p=e.target.closest('[data-price]');if(p){const n=p.dataset.price;const cur=licenses[n]||{};cur.price=p.value;licenses[n]=cur;store.set('tl_lic',licenses);}});
+list.addEventListener('input',e=>{
+  const big=e.target.closest('[data-card-edit]');
+  if(!big)return;
+  const key=big.dataset.cardEdit;
+  const [name,spec]=key.split('::');
+  const text=big.textContent;
+  if(!cardText[name])cardText[name]={};
+  cardText[name][spec]=text;
+  persistCardText();
+  // mirror to sibling .big divs in this card+spec (e.g. multiple weights showing same phrase)
+  const card=big.closest('.card');
+  if(card){card.querySelectorAll('[data-card-edit="'+CSS.escape(key)+'"]').forEach(el=>{
+    if(el!==big&&el.textContent!==text)el.textContent=text;
+  });}
+});
 
 /* ---------- uploads ---------- */
 const fi=document.getElementById('fileinput');
