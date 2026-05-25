@@ -178,7 +178,7 @@
 <div id="syncview"></div>
 <header>
   <div class="masthead">
-    <div class="brand"><h1>Type&nbsp;Lab</h1><span class="tick">specimen</span><span class="sub" id="catnote">Google Fonts + Fontshare + your uploads</span></div>
+    <div class="brand"><h1>Type&nbsp;Lab</h1><span class="tick">specimen</span><span class="sub" id="catnote">Google Fonts + Fontshare + Libre foundries + your uploads</span></div>
     <div style="display:flex;align-items:center;gap:.7rem"><button class="gear" id="syncbtn">⚙ sync</button><div class="count" id="count">—</div></div>
   </div>
   <div class="controls">
@@ -212,6 +212,7 @@
       <button class="pill on" data-src="all">All</button>
       <button class="pill" data-src="google">Google</button>
       <button class="pill" data-src="fontshare">Fontshare</button>
+      <button class="pill" data-src="libre">Libre</button>
       <button class="pill" data-src="uploaded">Uploaded</button>
       <span class="lbl" style="margin-left:.4rem">License</span>
       <button class="pill on" data-lic="all">All</button>
@@ -247,6 +248,13 @@ const GF=[{"f":"ABeeZee","c":"sans","s":["latin-ext"],"w":[400],"i":1},{"f":"Abe
 </script>
 <script>
 /* ---------- Fontshare catalog (100 free families) ---------- */
+/* ---------- Libre Fonts (self-hosted via jsDelivr CDN from foundry GitHub orgs) ---------- */
+/* Each entry: f=name, c=cat, w=weights, i=italic-available(0/1), src='lf',
+   foundry=display name, cdn=URL prefix, files={weight: filename, ...} */
+const LF=[
+  {"f":"League Spartan","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"lf","foundry":"League of Moveable Type","cdn":"https://cdn.jsdelivr.net/gh/theleagueof/league-spartan@master/fonts/webfonts/","files":{"100":"LeagueSpartan-Thin.woff2","200":"LeagueSpartan-ExtraLight.woff2","300":"LeagueSpartan-Light.woff2","400":"LeagueSpartan-Regular.woff2","500":"LeagueSpartan-Medium.woff2","600":"LeagueSpartan-SemiBold.woff2","700":"LeagueSpartan-Bold.woff2","800":"LeagueSpartan-ExtraBold.woff2","900":"LeagueSpartan-Black.woff2"}}
+];
+
 const FS=[{"f":"Kihim","slug":"kihim","c":"display","w":[400],"i":0,"src":"fs"},{"f":"General Sans","slug":"general-sans","c":"sans","w":[200,300,400,500,600,700],"i":0,"src":"fs"},{"f":"Rowan","slug":"rowan","c":"serif","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Technor","slug":"technor","c":"sans","w":[200,300,400,500,600,700,900],"i":0,"src":"fs"},{"f":"Comico","slug":"comico","c":"handwriting","w":[400],"i":0,"src":"fs"},{"f":"Gambarino","slug":"gambarino","c":"serif","w":[400],"i":0,"src":"fs"},{"f":"Gambetta","slug":"gambetta","c":"serif","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Synonym","slug":"synonym","c":"sans","w":[200,300,400,500,600,700],"i":0,"src":"fs"},{"f":"Sentient","slug":"sentient","c":"serif","w":[200,300,400,500,700],"i":0,"src":"fs"},{"f":"Boska","slug":"boska","c":"serif","w":[200,300,400,500,700,900],"i":0,"src":"fs"},{"f":"Switzer","slug":"switzer","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Tabular","slug":"tabular","c":"sans","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Tanker","slug":"tanker","c":"sans","w":[400],"i":0,"src":"fs"},{"f":"Expose","slug":"expose","c":"sans","w":[400,500,700,900],"i":0,"src":"fs"},{"f":"Boxing","slug":"boxing","c":"display","w":[400],"i":0,"src":"fs"},{"f":"Striper","slug":"striper","c":"display","w":[400],"i":0,"src":"fs"},{"f":"Pilcrow Rounded","slug":"pilcrow-rounded","c":"sans","w":[400,500,600,700,900],"i":0,"src":"fs"},{"f":"Melodrama","slug":"melodrama","c":"sans","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Kohinoor Zerone","slug":"kohinoor-zerone","c":"display","w":[100,200],"i":0,"src":"fs"},{"f":"New Title","slug":"new-title","c":"sans","w":[200,300,400,500,700],"i":0,"src":"fs"},{"f":"Aktura","slug":"aktura","c":"serif","w":[400],"i":0,"src":"fs"},{"f":"Alpino","slug":"alpino","c":"sans","w":[100,300,400,500,700,900],"i":0,"src":"fs"},{"f":"Amulya","slug":"amulya","c":"sans","w":[300,400,500,700],"i":0,"src":"fs"},{"f":"Array","slug":"array","c":"display","w":[400,600,700],"i":0,"src":"fs"},{"f":"Author","slug":"author","c":"sans","w":[200,300,400,500,600,700],"i":0,"src":"fs"},{"f":"Bespoke Sans","slug":"bespoke-sans","c":"sans","w":[300,400,500,700,800],"i":0,"src":"fs"},{"f":"Bespoke Serif","slug":"bespoke-serif","c":"serif","w":[300,400,500,700,800],"i":0,"src":"fs"},{"f":"Bespoke Slab","slug":"bespoke-slab","c":"serif","w":[300,400,500,700,800],"i":0,"src":"fs"},{"f":"Bespoke Stencil","slug":"bespoke-stencil","c":"sans","w":[300,400,500,700,800],"i":0,"src":"fs"},{"f":"Clash Grotesk","slug":"clash-grotesk","c":"sans","w":[200,300,400,500,600,700],"i":0,"src":"fs"},{"f":"Clash Display","slug":"clash-display","c":"sans","w":[200,300,400,500,600,700],"i":0,"src":"fs"},{"f":"Chubbo","slug":"chubbo","c":"display","w":[200,300,400,500,700],"i":0,"src":"fs"},{"f":"Chillax","slug":"chillax","c":"sans","w":[200,300,400,500,600,700],"i":0,"src":"fs"},{"f":"Cabinet Grotesk","slug":"cabinet-grotesk","c":"sans","w":[100,200,300,400,500,700,800,900],"i":0,"src":"fs"},{"f":"Britney","slug":"britney","c":"handwriting","w":[300,400,700,1000],"i":0,"src":"fs"},{"f":"Bonny","slug":"bonny","c":"serif","w":[100,300,400,500,700],"i":0,"src":"fs"},{"f":"Bevellier","slug":"bevellier","c":"display","w":[100,200,300,400,500,600,700,900],"i":0,"src":"fs"},{"f":"Archivo","slug":"archivo","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Anton","slug":"anton","c":"sans","w":[400],"i":0,"src":"fs"},{"f":"Poppins","slug":"poppins","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Dancing Script","slug":"dancing-script","c":"handwriting","w":[400,700],"i":0,"src":"fs"},{"f":"Bebas Neue","slug":"bebas-neue","c":"sans","w":[400],"i":0,"src":"fs"},{"f":"Be Vietnam Pro","slug":"beVietnam-pro","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Oswald","slug":"oswald","c":"sans","w":[200,300,400,500,600,700],"i":0,"src":"fs"},{"f":"JetBrains Mono","slug":"jet-brains-mono","c":"sans","w":[100,200,300,400,500,600,700,800],"i":0,"src":"fs"},{"f":"Outfit","slug":"outfit","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Montserrat","slug":"montserrat","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Crimson Pro","slug":"crimson-pro","c":"serif","w":[200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Public Sans","slug":"public-sans","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Spline Sans","slug":"spline-sans","c":"sans","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Fira Sans","slug":"fira-sans","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Lora","slug":"lora","c":"serif","w":[400,500,600,700],"i":0,"src":"fs"},{"f":"Work Sans","slug":"work-sans","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Asap","slug":"asap","c":"sans","w":[400,500,600,700],"i":0,"src":"fs"},{"f":"Manrope","slug":"manrope","c":"sans","w":[200,300,400,500,600,700,800],"i":0,"src":"fs"},{"f":"Epilogue","slug":"epilogue","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Plus Jakarta Sans","slug":"plus-jakarta-sans","c":"sans","w":[200,300,400,500,600,700,800],"i":0,"src":"fs"},{"f":"Azeret Mono","slug":"azeret-mono","c":"sans","w":[100,200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Nunito","slug":"nunito","c":"sans","w":[200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Familjen Grotesk","slug":"familjen-grotesk","c":"sans","w":[400,500,600,700],"i":0,"src":"fs"},{"f":"Kola","slug":"kola","c":"display","w":[400],"i":0,"src":"fs"},{"f":"Pencerio","slug":"pencerio","c":"handwriting","w":[50],"i":0,"src":"fs"},{"f":"Panchang","slug":"panchang","c":"sans","w":[200,300,400,500,600,700,800],"i":0,"src":"fs"},{"f":"Pally","slug":"pally","c":"sans","w":[400,500,700],"i":0,"src":"fs"},{"f":"Roundo","slug":"roundo","c":"sans","w":[200,300,400,500,600,700],"i":0,"src":"fs"},{"f":"Nippo","slug":"nippo","c":"display","w":[200,300,400,500,700],"i":0,"src":"fs"},{"f":"Neco","slug":"neco","c":"serif","w":[400,500,700,900],"i":0,"src":"fs"},{"f":"Erode","slug":"erode","c":"serif","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Hind","slug":"hind","c":"sans","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Excon","slug":"excon","c":"sans","w":[100,300,400,500,700,900],"i":0,"src":"fs"},{"f":"Kalam","slug":"kalam","c":"handwriting","w":[300,400,700],"i":0,"src":"fs"},{"f":"Hoover","slug":"hoover","c":"serif","w":[100,300,400,500,700],"i":0,"src":"fs"},{"f":"Space Grotesk","slug":"space-grotesk","c":"sans","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Recia","slug":"recia","c":"serif","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Stardom","slug":"stardom","c":"display","w":[400],"i":0,"src":"fs"},{"f":"RX100","slug":"rx-100","c":"sans","w":[400],"i":0,"src":"fs"},{"f":"Zina","slug":"zina","c":"display","w":[400],"i":0,"src":"fs"},{"f":"Segment","slug":"segment","c":"display","w":[400],"i":0,"src":"fs"},{"f":"Satoshi","slug":"satoshi","c":"sans","w":[300,400,500,700,900],"i":0,"src":"fs"},{"f":"Pramukh Rounded","slug":"pramukh-rounded","c":"sans","w":[200,300,350,400,600,700,800,900],"i":0,"src":"fs"},{"f":"Plein","slug":"plein","c":"sans","w":[300,400,500,700,900],"i":0,"src":"fs"},{"f":"Styro","slug":"styro","c":"display","w":[200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Sharpie","slug":"sharpie","c":"display","w":[300,400,700,800,900],"i":0,"src":"fs"},{"f":"Rajdhani","slug":"rajdhani","c":"sans","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Rosaline","slug":"rosaline","c":"handwriting","w":[400],"i":0,"src":"fs"},{"f":"Paquito","slug":"paquito","c":"serif","w":[400,500,700],"i":0,"src":"fs"},{"f":"Ranade","slug":"ranade","c":"sans","w":[100,300,400,500,700],"i":0,"src":"fs"},{"f":"Khand","slug":"khand","c":"sans","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Trench Slab","slug":"trench-slab","c":"serif","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Supreme","slug":"supreme","c":"sans","w":[100,200,300,400,500,700,800],"i":0,"src":"fs"},{"f":"Quilon","slug":"quilon","c":"sans","w":[400,500,600,700],"i":0,"src":"fs"},{"f":"Telma","slug":"telma","c":"handwriting","w":[300,400,500,700,900],"i":0,"src":"fs"},{"f":"Zodiak","slug":"zodiak","c":"serif","w":[100,300,400,700,800,900],"i":0,"src":"fs"},{"f":"Red Hat Display","slug":"red-hat-display","c":"sans","w":[300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Sora","slug":"sora","c":"sans","w":[100,200,300,400,500,600,700,800],"i":0,"src":"fs"},{"f":"Literata","slug":"literata","c":"serif","w":[200,300,400,500,600,700,800,900],"i":0,"src":"fs"},{"f":"Merriweather Sans","slug":"merriweather-sans","c":"sans","w":[300,400,500,600,700,800],"i":0,"src":"fs"},{"f":"Quicksand","slug":"quicksand","c":"sans","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Teko","slug":"teko","c":"sans","w":[300,400,500,600,700],"i":0,"src":"fs"},{"f":"Karma","slug":"karma","c":"serif","w":[300,400,500,600,700],"i":0,"src":"fs"}];
 
 /* ---------- safe persistence ---------- */
@@ -284,7 +292,7 @@ const state={view:'library',lang:'all',cat:'all',lic:'all',src:'all',q:'',phrase
   specs:{phrase:1,caps:1,para:1,single:1,black:1}};
 
 /* index by name */
-const byName={}; GF.forEach(f=>byName[f.f]=f); FS.forEach(f=>byName[f.f]=f);
+const byName={}; GF.forEach(f=>byName[f.f]=f); FS.forEach(f=>byName[f.f]=f); LF.forEach(f=>byName[f.f]=f);
 
 /* ---------- lazy font loading ---------- */
 const loaded=new Set();
@@ -292,6 +300,14 @@ function famOf(f){return f.up?f.fam:f.f;}
 function ensureFace(f,w,it){
   if(f.up)return;                         // uploaded faces already registered
   const key=f.f+'|'+w+'|'+(it?1:0); if(loaded.has(key))return; loaded.add(key);
+  if(f.src==='lf'){
+    // Libre Fonts — inject @font-face pointing to jsDelivr (no CSS API, we build the rule)
+    const filename=f.files&&f.files[String(w)];
+    if(!filename)return;
+    const css="@font-face{font-family:'"+f.f.replace(/'/g,"\\'")+"';src:url('"+f.cdn+filename+"') format('woff2');font-weight:"+w+";font-style:normal;font-display:swap}";
+    const s=document.createElement('style');s.textContent=css;document.head.appendChild(s);
+    return;
+  }
   const l=document.createElement('link');l.rel='stylesheet';
   if(f.src==='fs'){
     // Fontshare CSS API — italic not supported via simple endpoint, fall back to regular
@@ -322,7 +338,7 @@ function getLic(f){const d={type:f.up?'unknown':'free',price:''};return Object.a
 function pool(){
   if(state.view==='archive')return archived.map(n=>byName[n]||uploaded.find(u=>u.f===n)).filter(Boolean);
   if(state.view.indexOf('board:')===0){const b=state.view.slice(6);return (boards[b]||[]).map(n=>byName[n]||uploaded.find(u=>u.f===n)).filter(Boolean);}
-  return [...uploaded,...FS,...GF].filter(f=>archived.indexOf(f.f)<0);
+  return [...uploaded,...LF,...FS,...GF].filter(f=>archived.indexOf(f.f)<0);
 }
 function visibleFonts(){
   const L=LANGS[state.lang],q=state.q.toLowerCase();
@@ -332,9 +348,10 @@ function visibleFonts(){
     if(state.lang!=='all'&&!f.up&&(!f.s||f.s.indexOf(L.sub)<0))return false;
     if(state.lic!=='all'&&getLic(f).type!==state.lic)return false;
     if(state.src!=='all'){
-      const isFs=f.src==='fs',isUp=!!f.up,isGf=!isFs&&!isUp;
+      const isFs=f.src==='fs',isLf=f.src==='lf',isUp=!!f.up,isGf=!isFs&&!isLf&&!isUp;
       if(state.src==='google'&&!isGf)return false;
       if(state.src==='fontshare'&&!isFs)return false;
+      if(state.src==='libre'&&!isLf)return false;
       if(state.src==='uploaded'&&!isUp)return false;
     }
     if(state.favOnly&&!isFav(f.f))return false;
