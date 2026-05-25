@@ -11,6 +11,7 @@
   :root{
     --paper:#fdfaf3;--ink:#0e0e0e;--ink-soft:#3a3a36;--line:#e8e3d6;--line-strong:#c8c2b1;
     --accent:#0e0e0e;--black:#0e0e0e;--paper-on-black:#fdfaf3;--micro:#8e8a7e;
+    --size:46px;
     --ui:'Albert Sans',-apple-system,system-ui,sans-serif;
     --mono:'Spline Sans Mono',ui-monospace,monospace;--display:'Fraunces',Georgia,serif;
   }
@@ -91,9 +92,15 @@
   .spec{margin:0 0 3.5rem;font-synthesis:none}
   .spec:last-child{margin-bottom:0}
   .spec .tiny{font-family:var(--mono);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--micro);margin-bottom:1rem;display:block}
-  .big{line-height:1.25;letter-spacing:-.005em;word-break:break-word;color:var(--ink);min-height:1.25em;font-size-adjust:ex-height 0.5;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+  .big{line-height:1.25;letter-spacing:-.005em;word-break:break-word;color:var(--ink);min-height:1.25em;font-size:var(--size);font-size-adjust:ex-height 0.5;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;transition:font-size .14s ease}
   .big + .big{margin-top:.7rem}
-  .para{line-height:1.7;color:var(--ink);max-width:62ch;font-size-adjust:ex-height 0.5;-webkit-font-smoothing:antialiased}
+  .para{line-height:1.7;color:var(--ink);max-width:62ch;font-size:max(15px,calc(var(--size) * 0.4));font-size-adjust:ex-height 0.5;-webkit-font-smoothing:antialiased;transition:font-size .14s ease}
+  /* smooth list swaps for filter changes */
+  #list{transition:opacity .16s ease}
+  #list.swapping{opacity:0}
+  /* surgical specs container — local fade on weight/italic toggle */
+  .specs-wrap{transition:opacity .14s ease}
+  .specs-wrap.swapping{opacity:.35}
   .words{display:flex;gap:4rem;flex-wrap:wrap;align-items:baseline}
   .words .unit{display:flex;flex-direction:column;gap:.3rem}
   .blackstrip{background:var(--black);color:var(--paper-on-black);border-radius:6px;padding:1.6rem 1.6rem}
@@ -319,7 +326,7 @@ function visibleFonts(){
 }
 
 /* ---------- card ---------- */
-function cardInner(f,i){
+function buildSpecs(f){
   const L=LANGS[state.lang],S=state.specs,fam=famOf(f);
   const rtl=L.dir==='rtl'?' rtl':'';
   const it=italOn[f.f]?'font-style:italic;':'';
@@ -330,9 +337,24 @@ function cardInner(f,i){
   const cap=esc(ovr.caps ?? aPhrase());
   const bl=esc(ovr.black ?? aPhrase());
   const sel=selWeights(f),prim=sel[0];
-  const base=`font-family:'${esc(fam)}',sans-serif;font-size:${state.size}px;${it}`;
-  const lic=getLic(f),lm=LICMETA[lic.type];
+  const base=`font-family:'${esc(fam)}',sans-serif;${it}`;
   const ed=(spec)=>`contenteditable="plaintext-only" data-card-edit="${esc(f.f)}::${spec}" spellcheck="false"`;
+  let b='';
+  if(S.phrase) b+=`<div class="spec"><span class="tiny">phrase · click to edit</span>`+
+    sel.map(w=>`<div class="big${rtl}" ${ed('phrase')} style="${base}font-weight:${w}">${ph}</div>`).join('')+`</div>`;
+  if(S.caps) b+=`<div class="spec"><span class="tiny">caps · click to edit</span>`+
+    sel.map(w=>`<div class="big${rtl}" ${ed('caps')} style="${base}font-weight:${w};text-transform:uppercase">${cap}</div>`).join('')+`</div>`;
+  if(S.para) b+=`<div class="spec"><span class="tiny">paragraph · click to edit</span><div class="para${rtl}" ${ed('para')} style="${base}font-weight:${prim}">${pa}</div></div>`;
+  if(S.single) b+=`<div class="spec"><span class="tiny">single word · caps / lowercase · click to edit</span><div class="words">
+      <div class="unit"><div class="big${rtl}" ${ed('word')} style="${base}font-weight:${prim};text-transform:uppercase">${wd}</div></div>
+      <div class="unit"><div class="big${rtl}" ${ed('word')} style="${base}font-weight:${prim};text-transform:lowercase">${wd}</div></div></div></div>`;
+  if(S.black) b+=`<div class="spec"><span class="tiny">on black · click to edit</span><div class="blackstrip"><div class="big${rtl}" ${ed('black')} style="${base}font-weight:${prim}">${bl}</div></div></div>`;
+  return b;
+}
+function cardInner(f,i){
+  const fam=famOf(f);
+  const sel=selWeights(f);
+  const lic=getLic(f),lm=LICMETA[lic.type];
 
   let tags=f.up?'<span class="tag up">uploaded</span>'
     :`<span class="tag cat">${f.c}</span>`+(f.s||[]).map(x=>`<span class="tag">${x}</span>`).join('');
@@ -360,18 +382,6 @@ function cardInner(f,i){
   const chips=wlist.map(w=>`<button class="wchip${sel.indexOf(w)>=0?' on':''}" data-w="${w}" data-name="${esc(f.f)}">${w}</button>`).join('')
     + (f.up||f.i?`<button class="wchip ital${italOn[f.f]?' on':''}" data-ital="${esc(f.f)}">italic</button>`:'');
 
-  // specimens — all .big divs are editable; siblings in same spec mirror on input
-  let b='';
-  if(S.phrase) b+=`<div class="spec"><span class="tiny">phrase · click to edit</span>`+
-    sel.map(w=>`<div class="big${rtl}" ${ed('phrase')} style="${base}font-weight:${w}">${ph}</div>`).join('')+`</div>`;
-  if(S.caps) b+=`<div class="spec"><span class="tiny">caps · click to edit</span>`+
-    sel.map(w=>`<div class="big${rtl}" ${ed('caps')} style="${base}font-weight:${w};text-transform:uppercase">${cap}</div>`).join('')+`</div>`;
-  if(S.para) b+=`<div class="spec"><span class="tiny">paragraph · click to edit</span><div class="para${rtl}" ${ed('para')} style="font-family:'${esc(fam)}',sans-serif;font-size:${Math.max(15,Math.round(state.size*0.4))}px;font-weight:${prim};${it}">${pa}</div></div>`;
-  if(S.single) b+=`<div class="spec"><span class="tiny">single word · caps / lowercase · click to edit</span><div class="words">
-      <div class="unit"><div class="big${rtl}" ${ed('word')} style="${base}font-weight:${prim};text-transform:uppercase">${wd}</div></div>
-      <div class="unit"><div class="big${rtl}" ${ed('word')} style="${base}font-weight:${prim};text-transform:lowercase">${wd}</div></div></div></div>`;
-  if(S.black) b+=`<div class="spec"><span class="tiny">on black · click to edit</span><div class="blackstrip"><div class="big${rtl}" ${ed('black')} style="${base}font-weight:${prim}">${bl}</div></div></div>`;
-
   return `<div class="card-head">
       <div class="ch-top">
         <button class="star${isFav(f.f)?' on':''}" data-fav="${esc(f.f)}" title="favourite">${isFav(f.f)?'★':'☆'}</button>
@@ -383,7 +393,9 @@ function cardInner(f,i){
         <span class="actions">${actions}</span>
       </div>
     </div>
-    <div class="weights">${chips}</div>${b}<div class="insight"></div>`;
+    <div class="weights">${chips}</div>
+    <div class="specs-wrap">${buildSpecs(f)}</div>
+    <div class="insight"></div>`;
 }
 function makeCardEl(f,i){
   const el=document.createElement('div');
@@ -402,23 +414,45 @@ function refreshCard(el,f){
     requestAnimationFrame(()=>el.classList.remove('refreshing'));
   });
 }
+function refreshSpecs(card,f){
+  /* surgical: rebuild only the .specs-wrap and update weight-chip on-states */
+  const wrap=card.querySelector('.specs-wrap');
+  if(!wrap){refreshCard(card,f);return;}
+  // update weight chip on-states without rebuilding the row
+  const sel=selWeights(f);
+  card.querySelectorAll('.weights [data-w]').forEach(chip=>{
+    chip.classList.toggle('on',sel.indexOf(+chip.dataset.w)>=0);
+  });
+  const italChip=card.querySelector('.weights [data-ital]');
+  if(italChip)italChip.classList.toggle('on',!!italOn[f.f]);
+  wrap.classList.add('swapping');
+  requestAnimationFrame(()=>{
+    wrap.innerHTML=buildSpecs(f);
+    loadCardFaces(f);
+    requestAnimationFrame(()=>wrap.classList.remove('swapping'));
+  });
+}
 
 /* ---------- infinite scroll ---------- */
 const list=document.getElementById('list');
 const PAGE=70; let filtered=[], shown=0;
 const faceObs=new IntersectionObserver((ents)=>{
   ents.forEach(e=>{if(e.isIntersecting){const f=byName[e.target.dataset.name]||uploaded.find(u=>u.f===e.target.dataset.name);if(f)loadCardFaces(f);faceObs.unobserve(e.target);}});
-},{rootMargin:'400px'});
+},{rootMargin:'1200px'});
 function appendMore(){
   const slice=filtered.slice(shown,shown+PAGE);
   slice.forEach((f,k)=>{const el=makeCardEl(f,shown+k);el.dataset.idx=shown+k;list.appendChild(el);faceObs.observe(el);});
   shown+=slice.length;
 }
 function applyFilter(){
-  filtered=visibleFonts();shown=0;list.innerHTML='';
-  if(!filtered.length){list.innerHTML='<div class="empty">Nothing here yet.<br>Try another script, clear the search, switch view, or upload your own.</div>';}
-  else appendMore();
-  document.getElementById('count').textContent=filtered.length.toLocaleString()+' face'+(filtered.length===1?'':'s')+' · '+LANGS[state.lang].label+(state.view==='library'?'':' · '+(state.view.indexOf('board:')===0?'board “'+state.view.slice(6)+'”':'archive'));
+  list.classList.add('swapping');
+  requestAnimationFrame(()=>{
+    filtered=visibleFonts();shown=0;list.innerHTML='';
+    if(!filtered.length){list.innerHTML='<div class="empty">Nothing here yet.<br>Try another script, clear the search, switch view, or upload your own.</div>';}
+    else appendMore();
+    document.getElementById('count').textContent=filtered.length.toLocaleString()+' face'+(filtered.length===1?'':'s')+' · '+LANGS[state.lang].label+(state.view==='library'?'':' · '+(state.view.indexOf('board:')===0?'board “'+state.view.slice(6)+'”':'archive'));
+    requestAnimationFrame(()=>list.classList.remove('swapping'));
+  });
 }
 const pageObs=new IntersectionObserver((ents)=>{if(ents[0].isIntersecting&&shown<filtered.length)appendMore();},{rootMargin:'600px'});
 pageObs.observe(document.getElementById('sentinel'));
@@ -477,7 +511,7 @@ let qt;document.getElementById('search').oninput=e=>{state.q=e.target.value;clea
 let pt2;document.getElementById('phrase').oninput=e=>{state.phrase=e.target.value;clearTimeout(pt2);pt2=setTimeout(applyFilter,150);};
 let wt2;document.getElementById('word').oninput=e=>{state.word=e.target.value;clearTimeout(wt2);wt2=setTimeout(applyFilter,150);};
 const sz=document.getElementById('size');
-let st;sz.oninput=e=>{state.size=+e.target.value;document.getElementById('sizeval').textContent=state.size+'px';clearTimeout(st);st=setTimeout(applyFilter,120);};
+sz.oninput=e=>{state.size=+e.target.value;document.getElementById('sizeval').textContent=state.size+'px';document.documentElement.style.setProperty('--size',state.size+'px');};
 
 /* ---------- card events (delegated) ---------- */
 list.addEventListener('click',e=>{
@@ -489,8 +523,8 @@ list.addEventListener('click',e=>{
   const rs=e.target.closest('[data-restore]');if(rs){const n=rs.dataset.restore;archived=archived.filter(x=>x!==n);store.set('tl_arch',archived);renderBoardPills();card.remove();return;}
   const cm=e.target.closest('[data-cmp]');if(cm){const n=cm.dataset.cmp;const f=byName[n]||uploaded.find(u=>u.f===n);const i=state.compare.indexOf(n);if(i>=0)state.compare.splice(i,1);else{if(state.compare.length>=3)return;state.compare.push(n);}refreshCard(card,f);updateCmpBar();return;}
   const ins=e.target.closest('[data-insight]');if(ins){const n=ins.dataset.insight;const f=byName[n]||uploaded.find(u=>u.f===n);const div=card.querySelector('.insight');if(div.classList.contains('show')){div.classList.remove('show');}else{analyzeFont(f,div);}return;}
-  const wc=e.target.closest('[data-w]');if(wc){const n=wc.dataset.name,w=+wc.dataset.w;const f=byName[n]||uploaded.find(u=>u.f===n);const s=selW[f.f]||selWeights(f);const idx=s.indexOf(w);if(idx>=0){if(s.length>1)s.splice(idx,1);}else s.push(w);selW[f.f]=s;refreshCard(card,f);return;}
-  const ic=e.target.closest('[data-ital]');if(ic){const n=ic.dataset.ital;const f=byName[n]||uploaded.find(u=>u.f===n);italOn[f.f]=!italOn[f.f];refreshCard(card,f);return;}
+  const wc=e.target.closest('[data-w]');if(wc){const n=wc.dataset.name,w=+wc.dataset.w;const f=byName[n]||uploaded.find(u=>u.f===n);const s=selW[f.f]||selWeights(f);const idx=s.indexOf(w);if(idx>=0){if(s.length>1)s.splice(idx,1);}else s.push(w);selW[f.f]=s;refreshSpecs(card,f);return;}
+  const ic=e.target.closest('[data-ital]');if(ic){const n=ic.dataset.ital;const f=byName[n]||uploaded.find(u=>u.f===n);italOn[f.f]=!italOn[f.f];refreshSpecs(card,f);return;}
 });
 list.addEventListener('change',e=>{const sel=e.target.closest('[data-licsel]');if(sel){const n=sel.dataset.licsel;const cur=licenses[n]||{};cur.type=sel.value;licenses[n]=cur;store.set('tl_lic',licenses);const f=byName[n]||uploaded.find(u=>u.f===n);refreshCard(e.target.closest('.card'),f);}});
 list.addEventListener('input',e=>{const p=e.target.closest('[data-price]');if(p){const n=p.dataset.price;const cur=licenses[n]||{};cur.price=p.value;licenses[n]=cur;store.set('tl_lic',licenses);}});
