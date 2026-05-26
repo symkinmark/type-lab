@@ -93,9 +93,9 @@
   .spec{margin:0 0 3.5rem;font-synthesis:none}
   .spec:last-child{margin-bottom:0}
   .spec .tiny{font-family:var(--mono);font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--micro);margin-bottom:1rem;display:block}
-  .big{line-height:1.25;letter-spacing:-.005em;word-break:break-word;color:var(--ink);min-height:1.25em;font-size:var(--size);font-size-adjust:ex-height 0.5;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision;transition:font-size .14s ease}
+  .big{line-height:1.25;letter-spacing:-.005em;word-break:break-word;color:var(--ink);min-height:1.25em;font-size:var(--size);font-size-adjust:ex-height 0.5;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
   .big + .big{margin-top:.7rem}
-  .para{line-height:1.7;color:var(--ink);max-width:62ch;font-size:max(15px,calc(var(--size) * 0.4));font-size-adjust:ex-height 0.5;-webkit-font-smoothing:antialiased;transition:font-size .14s ease}
+  .para{line-height:1.7;color:var(--ink);max-width:62ch;font-size:max(15px,calc(var(--size) * 0.4));font-size-adjust:ex-height 0.5;-webkit-font-smoothing:antialiased}
   /* smooth list swaps for filter changes */
   #list{transition:opacity .16s ease}
   #list.swapping{opacity:0}
@@ -198,6 +198,7 @@
       <button class="pill" data-lang="pt">Portuguese</button>
       <button class="pill" data-lang="de">German</button>
       <button class="pill fav" id="favonly">★ Favourites</button>
+      <button class="pill" id="randompill" title="Shuffle font order">🎲 Random</button>
       <input type="text" class="search" id="search" placeholder="search fonts…">
     </div>
     <div class="row">
@@ -288,7 +289,7 @@ let suppressSync=false,syncTimer;
 function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(cloudSave,1500);}
 const selW={}, italOn={};                 // per-font choices (session)
 const uploaded=[]; let upId=0;
-const state={view:'library',lang:'all',cat:'all',lic:'all',src:'all',q:'',phrase:'',word:'',size:46,favOnly:false,compare:[],
+const state={view:'library',lang:'all',cat:'all',lic:'all',src:'all',q:'',phrase:'',word:'',size:46,favOnly:false,random:false,randomSeed:0,compare:[],
   specs:{phrase:1,caps:1,para:1,single:1,black:1}};
 
 /* index by name */
@@ -359,6 +360,12 @@ function visibleFonts(){
   });
   if(state.view==='library'||state.view.indexOf('board:')===0)
     arr.sort((a,b)=>(isFav(b.f)?1:0)-(isFav(a.f)?1:0));
+  if(state.random){
+    // seeded shuffle so order is stable across re-renders within a session toggle
+    let seed=state.randomSeed||1;
+    const rng=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};
+    for(let i=arr.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  }
   return arr;
 }
 
@@ -545,6 +552,7 @@ document.querySelectorAll('[data-lic]').forEach(b=>b.onclick=()=>{setActive('[da
 document.querySelectorAll('[data-src]').forEach(b=>b.onclick=()=>{setActive('[data-src]',b);state.src=b.dataset.src;applyFilter();});
 document.querySelectorAll('[data-spec]').forEach(b=>b.onclick=()=>{b.classList.toggle('on');state.specs[b.dataset.spec]=b.classList.contains('on')?1:0;applyFilter();});
 document.getElementById('favonly').onclick=function(){this.classList.toggle('on');state.favOnly=this.classList.contains('on');applyFilter();};
+document.getElementById('randompill').onclick=function(){this.classList.toggle('on');state.random=this.classList.contains('on');if(state.random)state.randomSeed=Math.floor(Math.random()*1e9);applyFilter();window.scrollTo(0,0);};
 let qt;document.getElementById('search').oninput=e=>{state.q=e.target.value;clearTimeout(qt);qt=setTimeout(applyFilter,160);};
 let pt2;document.getElementById('phrase').oninput=e=>{state.phrase=e.target.value;clearTimeout(pt2);pt2=setTimeout(applyFilter,150);};
 let wt2;document.getElementById('word').oninput=e=>{state.word=e.target.value;clearTimeout(wt2);wt2=setTimeout(applyFilter,150);};
